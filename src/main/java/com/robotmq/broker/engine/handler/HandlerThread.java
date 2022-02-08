@@ -4,30 +4,27 @@ import com.robotmq.broker.vo.SocketTopics;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.ui.context.Theme;
 import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.stream.Collectors;
-
-import static org.reflections.util.ConfigurationBuilder.build;
 
 @Slf4j
-public class ReaderHandlerThread extends Thread {
+public class HandlerThread extends Thread{
+
 
     Socket socket;
+    private PrintWriter outStream = null;
+    BufferedReader inStream = null;
 
-    public ReaderHandlerThread(Socket socket) {
+    public HandlerThread(Socket socket) {
         this.socket = socket;
         log.info("New Reader Thread Created ! Client address : {} : {}", socket.getInetAddress(), socket.getPort());
     }
@@ -36,10 +33,9 @@ public class ReaderHandlerThread extends Thread {
     @Override
     public void run() {
 
-        BufferedReader inStream = null;
-
         try {
             inStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            outStream = new PrintWriter(socket.getOutputStream(),true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -51,6 +47,8 @@ public class ReaderHandlerThread extends Thread {
             }
 
             try {
+
+                /// INPUT
                 if (inStream != null && inStream.ready()) {
                     String line = inStream.readLine();
                     if (StringUtils.hasText(line)) {
@@ -87,6 +85,25 @@ public class ReaderHandlerThread extends Thread {
 
                     }
                 }
+
+                /// OUTPUT
+                if (outStream != null) {
+                    CommonVars.SOCKET_TOPICS.forEach(o -> {
+                        o.getTopics().forEach(t -> {
+                            final BlockingQueue<String> dataToConsumed = CommonVars.TOPICS_AND_DATA.get(t);
+                            if(dataToConsumed != null){
+                                dataToConsumed.forEach( d -> {
+                                    outStream.println("DATA : "+d+"\n");
+                                    //outStream.flush();
+                                });
+                                CommonVars.TOPICS_AND_DATA.remove(t);
+                            }
+                        });
+                    });
+
+                }
+
+
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
                 return;

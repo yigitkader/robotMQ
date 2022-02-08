@@ -29,8 +29,9 @@ public class RobotMQHandler implements Handler{
                 System.out.println("I/O error: " + e);
             }
             if (socket != null){
-                new ReaderHandlerThread(socket).start();
-                new WriterHandlerThread(socket).start();
+                HandlerThread handlerThread = new HandlerThread(socket);
+                handlerThread.setName(socket.toString());
+                handlerThread.start();
                 CommonVars.SOCKET_POOL.add(socket);
             }
         }
@@ -49,8 +50,10 @@ public class RobotMQHandler implements Handler{
 
 
 
-    @Scheduled(fixedDelay = 2000)
+    @Scheduled(fixedDelay = 20000)
     void heartBeat(){
-        CommonVars.SOCKET_POOL.removeIf(o -> !o.isConnected() || o.isClosed() || o.isInputShutdown() || o.isOutputShutdown());
+        //CommonVars.SOCKET_POOL.removeIf(o -> !o.isConnected() || o.isClosed() || o.isInputShutdown() || o.isOutputShutdown());
+        Thread.currentThread().interrupt();
+        System.out.println("Thread Killed");
     }
 }
