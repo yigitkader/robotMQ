@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDateTime;
 
 @Component
 @Qualifier("robotMQHandler")
@@ -37,7 +38,7 @@ public class RobotMQHandler implements Handler{
                         && (o.getLocalPort() == finalSocket.getLocalPort() || o.getPort() == finalSocket.getPort()));
 
                 HandlerThread handlerThread = new HandlerThread(socket);
-                handlerThread.setName(socket.toString());
+                handlerThread.setName("RobotMQHandlerThread-"+socket.toString()+ LocalDateTime.now());
                 handlerThread.start();
                 CommonVars.SOCKET_POOL.add(socket);
             }
