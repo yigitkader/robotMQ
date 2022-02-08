@@ -26,13 +26,13 @@ public class HandlerThread extends Thread{
 
     public HandlerThread(Socket socket) {
         this.socket = socket;
-        log.info("New Reader Thread Created ! Client address : {} : {}", socket.getInetAddress(), socket.getPort());
+        log.info("New Thread Created ! Client address : {} , Port : {} , LocalPort : {}", socket.getInetAddress(), socket.getPort(),socket.getLocalPort());
     }
 
 
     @Override
     public void run() {
-
+        log.info("Current Thread : {}",currentThread());
         try {
             inStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             outStream = new PrintWriter(socket.getOutputStream(),true);
@@ -57,7 +57,7 @@ public class HandlerThread extends Thread{
                         JSONObject collect = new JSONObject(line);
                         String type = collect.getString("type");
 
-                        if ("produce-request".equals(type)) {
+                        if (RobotMQConstants.PRODUCE_REQUEST.equals(type)) {
                             String topic = collect.getString("topic");
                             String data = collect.getString("data");
 
@@ -67,7 +67,7 @@ public class HandlerThread extends Thread{
                             dataOfTopic.put(data);
                             CommonVars.TOPICS_AND_DATA.put(topic, dataOfTopic);
 
-                        } else if ("send-topics-request".equals(type)) {
+                        } else if (RobotMQConstants.SEND_TOPICS_REQUEST.equals(type)) {
 
                             String topics = collect.getString("topics");
                             Set<String> socketTopicsList = new HashSet<>();

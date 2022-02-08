@@ -55,12 +55,4 @@ public class RobotMQHandler implements Handler{
         return robotMQServerSocket;
     }
 
-
-
-    @Scheduled(fixedDelay = 20000)
-    void heartBeat(){
-        //CommonVars.SOCKET_POOL.removeIf(o -> !o.isConnected() || o.isClosed() || o.isInputShutdown() || o.isOutputShutdown());
-        Thread.currentThread().interrupt();
-        System.out.println("Thread Killed");
-    }
 }
