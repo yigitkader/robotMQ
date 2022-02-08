@@ -43,7 +43,11 @@ public class HandlerThread extends Thread{
         while (true) {
 
             if (!CommonVars.SOCKET_POOL.contains(this.socket)) {
-                Thread.currentThread().interrupt();
+                currentThread().interrupt();
+                if (currentThread().isInterrupted()){
+                    log.info("Thread : {} killed",currentThread());
+                    break;
+                }
             }
 
             try {
