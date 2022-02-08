@@ -38,7 +38,7 @@ public class RobotMQHandler implements Handler{
                         && (o.getLocalPort() == finalSocket.getLocalPort() || o.getPort() == finalSocket.getPort()));
 
                 HandlerThread handlerThread = new HandlerThread(socket);
-                handlerThread.setName("RobotMQHandlerThread-"+socket.toString()+ LocalDateTime.now());
+                handlerThread.setName("RobotMQHandlerThread-"+socket+ LocalDateTime.now());
                 handlerThread.start();
                 CommonVars.SOCKET_POOL.add(socket);
             }

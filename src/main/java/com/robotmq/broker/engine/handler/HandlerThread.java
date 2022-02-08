@@ -17,25 +17,25 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Slf4j
-public class HandlerThread extends Thread{
+public class HandlerThread extends Thread {
 
 
-    Socket socket;
+    private Socket socket;
     private PrintWriter outStream = null;
-    BufferedReader inStream = null;
+    private BufferedReader inStream = null;
 
     public HandlerThread(Socket socket) {
         this.socket = socket;
-        log.info("New Thread Created ! Client address : {} , Port : {} , LocalPort : {}", socket.getInetAddress(), socket.getPort(),socket.getLocalPort());
+        log.info("New Thread Created ! Client address : {} , Port : {} , LocalPort : {}", socket.getInetAddress(), socket.getPort(), socket.getLocalPort());
     }
 
 
     @Override
     public void run() {
-        log.info("Current Thread : {}",currentThread());
+        log.info("Current Thread : {}", currentThread());
         try {
             inStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            outStream = new PrintWriter(socket.getOutputStream(),true);
+            outStream = new PrintWriter(socket.getOutputStream(), true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -44,8 +44,8 @@ public class HandlerThread extends Thread{
 
             if (!CommonVars.SOCKET_POOL.contains(this.socket)) {
                 currentThread().interrupt();
-                if (currentThread().isInterrupted()){
-                    log.info("Thread : {} killed",currentThread());
+                if (currentThread().isInterrupted()) {
+                    log.info("Thread : {} killed", currentThread());
                     break;
                 }
             }
@@ -97,9 +97,9 @@ public class HandlerThread extends Thread{
                     CommonVars.SOCKET_TOPICS.forEach(o -> {
                         o.getTopics().forEach(t -> {
                             final BlockingQueue<String> dataToConsumed = CommonVars.TOPICS_AND_DATA.get(t);
-                            if(dataToConsumed != null){
-                                dataToConsumed.forEach( d -> {
-                                    outStream.println("DATA : "+d+"\n");
+                            if (dataToConsumed != null) {
+                                dataToConsumed.forEach(d -> {
+                                    outStream.println("DATA : " + d + "\n");
                                     //outStream.flush();
                                 });
                                 CommonVars.TOPICS_AND_DATA.remove(t);
