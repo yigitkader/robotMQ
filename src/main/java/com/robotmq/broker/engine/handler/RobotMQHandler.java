@@ -29,6 +29,13 @@ public class RobotMQHandler implements Handler{
                 System.out.println("I/O error: " + e);
             }
             if (socket != null){
+                ///Should delete There is same socket in there/
+
+                /// TODO : It can be problem localport on production. Change later
+                Socket finalSocket = socket;
+                CommonVars.SOCKET_POOL.removeIf(o -> o.getInetAddress().equals(finalSocket.getInetAddress())
+                        && (o.getLocalPort() == finalSocket.getLocalPort() || o.getPort() == finalSocket.getPort()));
+
                 HandlerThread handlerThread = new HandlerThread(socket);
                 handlerThread.setName(socket.toString());
                 handlerThread.start();

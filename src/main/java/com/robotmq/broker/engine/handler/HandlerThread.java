@@ -75,6 +75,8 @@ public class HandlerThread extends Thread{
                                 socketTopicsList.add(o.toString());
                             });
 
+                            //TODO :  Only one client listen one topic. delete before if it.
+
                             SocketTopics socketTopics = SocketTopics.builder()
                                     .socket(this.socket)
                                     .topics(socketTopicsList)
