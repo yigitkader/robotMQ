@@ -18,7 +18,7 @@ public class RobotMQHandler implements Handler{
 
 
     @Override
-    public void handler() {
+    public void handler() throws InterruptedException {
         Socket socket = null;
         robotMQServerSocket = createServerSocket();
         while (true) {
@@ -30,19 +30,26 @@ public class RobotMQHandler implements Handler{
             if (socket != null){
                 new ReaderHandlerThread(socket).start();
                 new WriterHandlerThread(socket).start();
+                CommonVars.SOCKET_POOL.add(socket);
             }
         }
     }
 
-    public ServerSocket createServerSocket() {
+    public ServerSocket createServerSocket() throws InterruptedException {
         try {
             robotMQServerSocket = new ServerSocket(Integer.parseInt(ROBOTMQ_SERVER_SOCKET_PORT));
             System.out.println("Created Server Socket");
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Trying to create Server Socket");
-            return createServerSocket();
+            throw new InterruptedException();
         }
         return robotMQServerSocket;
+    }
+
+
+
+    // todo : Complete here
+    void heartBeat(){
+        //Del socket from socketpool if connection close
     }
 }

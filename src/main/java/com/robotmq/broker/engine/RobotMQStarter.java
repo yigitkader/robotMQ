@@ -16,7 +16,7 @@ public class RobotMQStarter {
     private Handler robotMQHandler;
 
     @PostConstruct
-    void startRobotMQ(){
+    void startRobotMQ() throws InterruptedException {
         robotMQHandler.handler();
     }
 }
