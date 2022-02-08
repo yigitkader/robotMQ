@@ -4,6 +4,7 @@ import com.robotmq.broker.vo.SocketTopics;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.ui.context.Theme;
 import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
@@ -50,7 +51,7 @@ public class ReaderHandlerThread extends Thread {
             }
 
             try {
-                if (inStream != null) {
+                if (inStream != null && inStream.ready()) {
                     String line = inStream.readLine();
                     if (StringUtils.hasText(line)) {
 

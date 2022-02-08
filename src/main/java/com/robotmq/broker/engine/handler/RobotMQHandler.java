@@ -2,6 +2,7 @@ package com.robotmq.broker.engine.handler;
 
 import com.robotmq.broker.util.GeneralProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -48,8 +49,8 @@ public class RobotMQHandler implements Handler{
 
 
 
-    // todo : Complete here
+    @Scheduled(fixedDelay = 2000)
     void heartBeat(){
-        //Del socket from socketpool if connection close
+        CommonVars.SOCKET_POOL.removeIf(o -> !o.isConnected() || o.isClosed() || o.isInputShutdown() || o.isOutputShutdown());
     }
 }

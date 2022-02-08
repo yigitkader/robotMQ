@@ -25,8 +25,6 @@ public class WriterHandlerThread extends Thread {
     @Override
     public void run() {
 
-
-
         try {
              outStream = new PrintWriter(socket.getOutputStream(),true);
         } catch (IOException e) {
@@ -44,13 +42,13 @@ public class WriterHandlerThread extends Thread {
                         if(dataToConsumed != null){
                             dataToConsumed.forEach( d -> {
                                 outStream.println("DATA : "+d+"\n");
-                                outStream.flush();
+                                //outStream.flush();
                             });
+                            CommonVars.TOPICS_AND_DATA.remove(t);
                         }
                     });
                 });
-                /* outStream.println("ahey ahey from server \n");
-                outStream.flush();*/
+
             }
 
         }
