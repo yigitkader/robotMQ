@@ -27,8 +27,10 @@ public class RobotMQHandler implements Handler{
             } catch (IOException e) {
                 System.out.println("I/O error: " + e);
             }
-            new ReaderHandlerThread(socket).start();
-            new WriterHandlerThread(socket).start();
+            if (socket != null){
+                new ReaderHandlerThread(socket).start();
+                new WriterHandlerThread(socket).start();
+            }
         }
     }
 

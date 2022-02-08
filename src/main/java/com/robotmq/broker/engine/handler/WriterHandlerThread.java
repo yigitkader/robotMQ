@@ -29,8 +29,15 @@ public class WriterHandlerThread extends Thread {
         }
 
         while (true) {
-            outStream.println("ahey ahey from server \n");
-            outStream.flush();
+            if (outStream != null) {
+                if (!CommonVars.topicSocketPool.isEmpty()) {
+
+                }
+
+                outStream.println("ahey ahey from server \n");
+                outStream.flush();
+            }
+
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
