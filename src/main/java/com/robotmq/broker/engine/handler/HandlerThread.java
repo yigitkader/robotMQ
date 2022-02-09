@@ -32,7 +32,6 @@ public class HandlerThread extends Thread {
         log.info("New Thread Created ! Client address : {} , Port : {} , LocalPort : {}", socket.getInetAddress(), socket.getPort(), socket.getLocalPort());
     }
 
-
     @Override
     public void run() {
         log.info("Current Thread : {}", currentThread());
@@ -44,7 +43,6 @@ public class HandlerThread extends Thread {
         }
 
         while (true) {
-
             if (!CommonVars.SOCKET_POOL.contains(this.socket)) {
                 currentThread().interrupt();
                 if (currentThread().isInterrupted()) {
@@ -59,7 +57,6 @@ public class HandlerThread extends Thread {
                 if (inStream != null && inStream.ready()) {
                     String line = inStream.readLine();
                     if (StringUtils.hasText(line)) {
-
                         System.out.println(line);
                         JSONObject collect = new JSONObject(line);
                         String type = collect.getString("type");
@@ -73,7 +70,6 @@ public class HandlerThread extends Thread {
 
                             dataOfTopic.put(data);
                             CommonVars.TOPICS_AND_DATA.put(topic, dataOfTopic);
-
                         } else if (RobotMQConstants.SEND_TOPICS_REQUEST.equals(type)) {
 
                             String topics = collect.getString("topics");
@@ -82,16 +78,12 @@ public class HandlerThread extends Thread {
                                 socketTopicsList.add(o.toString());
                             });
 
-
-
                             SocketTopics socketTopics = SocketTopics.builder()
                                     .socket(this.socket)
                                     .topics(socketTopicsList)
                                     .build();
                             CommonVars.SOCKET_TOPICS.add(socketTopics);
                         }
-
-
                     }
                 }
 
