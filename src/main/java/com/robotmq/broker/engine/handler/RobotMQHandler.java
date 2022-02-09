@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDateTime;
 
 @Component
 @Qualifier("robotMQHandler")
@@ -29,8 +30,15 @@ public class RobotMQHandler implements Handler{
                 System.out.println("I/O error: " + e);
             }
             if (socket != null){
+                ///Should delete There is same socket in there/
+
+                /// TODO : It can be problem localport on production. Change later
+                Socket finalSocket = socket;
+                CommonVars.SOCKET_POOL.removeIf(o -> o.getInetAddress().equals(finalSocket.getInetAddress())
+                        && (o.getLocalPort() == finalSocket.getLocalPort() || o.getPort() == finalSocket.getPort()));
+
                 HandlerThread handlerThread = new HandlerThread(socket);
-                handlerThread.setName(socket.toString());
+                handlerThread.setName("RobotMQHandlerThread-"+socket+ LocalDateTime.now());
                 handlerThread.start();
                 CommonVars.SOCKET_POOL.add(socket);
             }
@@ -48,12 +56,4 @@ public class RobotMQHandler implements Handler{
         return robotMQServerSocket;
     }
 
-
-
-    @Scheduled(fixedDelay = 20000)
-    void heartBeat(){
-        //CommonVars.SOCKET_POOL.removeIf(o -> !o.isConnected() || o.isClosed() || o.isInputShutdown() || o.isOutputShutdown());
-        Thread.currentThread().interrupt();
-        System.out.println("Thread Killed");
-    }
 }

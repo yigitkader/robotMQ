@@ -1,5 +1,8 @@
 package com.robotmq.broker.engine.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.robotmq.broker.vo.SocketTopics;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -17,33 +20,35 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Slf4j
-public class HandlerThread extends Thread{
+public class HandlerThread extends Thread {
 
 
-    Socket socket;
+    private Socket socket;
     private PrintWriter outStream = null;
-    BufferedReader inStream = null;
+    private BufferedReader inStream = null;
 
     public HandlerThread(Socket socket) {
         this.socket = socket;
-        log.info("New Reader Thread Created ! Client address : {} : {}", socket.getInetAddress(), socket.getPort());
+        log.info("New Thread Created ! Client address : {} , Port : {} , LocalPort : {}", socket.getInetAddress(), socket.getPort(), socket.getLocalPort());
     }
-
 
     @Override
     public void run() {
-
+        log.info("Current Thread : {}", currentThread());
         try {
             inStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            outStream = new PrintWriter(socket.getOutputStream(),true);
+            outStream = new PrintWriter(socket.getOutputStream(), true);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         while (true) {
-
             if (!CommonVars.SOCKET_POOL.contains(this.socket)) {
-                Thread.currentThread().interrupt();
+                currentThread().interrupt();
+                if (currentThread().isInterrupted()) {
+                    log.info("Thread : {} killed", currentThread());
+                    break;
+                }
             }
 
             try {
@@ -52,12 +57,11 @@ public class HandlerThread extends Thread{
                 if (inStream != null && inStream.ready()) {
                     String line = inStream.readLine();
                     if (StringUtils.hasText(line)) {
-
                         System.out.println(line);
                         JSONObject collect = new JSONObject(line);
                         String type = collect.getString("type");
 
-                        if ("produce-request".equals(type)) {
+                        if (RobotMQConstants.PRODUCE_REQUEST.equals(type)) {
                             String topic = collect.getString("topic");
                             String data = collect.getString("data");
 
@@ -66,8 +70,7 @@ public class HandlerThread extends Thread{
 
                             dataOfTopic.put(data);
                             CommonVars.TOPICS_AND_DATA.put(topic, dataOfTopic);
-
-                        } else if ("send-topics-request".equals(type)) {
+                        } else if (RobotMQConstants.SEND_TOPICS_REQUEST.equals(type)) {
 
                             String topics = collect.getString("topics");
                             Set<String> socketTopicsList = new HashSet<>();
@@ -81,8 +84,6 @@ public class HandlerThread extends Thread{
                                     .build();
                             CommonVars.SOCKET_TOPICS.add(socketTopics);
                         }
-
-
                     }
                 }
 
@@ -91,14 +92,24 @@ public class HandlerThread extends Thread{
                     CommonVars.SOCKET_TOPICS.forEach(o -> {
                         o.getTopics().forEach(t -> {
                             final BlockingQueue<String> dataToConsumed = CommonVars.TOPICS_AND_DATA.get(t);
-                            if(dataToConsumed != null){
-                                dataToConsumed.forEach( d -> {
-                                    outStream.println("DATA : "+d+"\n");
-                                    //outStream.flush();
+                            if (dataToConsumed != null) {
+                                dataToConsumed.forEach(d -> {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject();
+                                        jsonObject.put("topic",t);
+                                        jsonObject.put("data",d);
+                                        outStream.println(jsonObject.toString()+"\n\r");
+                                        outStream.flush();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 });
                                 CommonVars.TOPICS_AND_DATA.remove(t);
+                                //TODO :  Only one client listen one topic. delete before if it.
                             }
                         });
+
+
                     });
 
                 }
@@ -109,6 +120,12 @@ public class HandlerThread extends Thread{
                 return;
             }
         }
+    }
+
+
+    private String convertObjectToJsonString(Object obj) throws JsonProcessingException {
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        return ow.writeValueAsString(obj);
     }
 
 }
