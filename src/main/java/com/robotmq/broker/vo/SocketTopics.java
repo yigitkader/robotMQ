@@ -3,7 +3,9 @@ package com.robotmq.broker.vo;
 import java.net.Socket;
 import java.util.Set;
 
-
+/**
+ * @author yigitkader
+ */
 public class SocketTopics {
 
     private Socket socket;

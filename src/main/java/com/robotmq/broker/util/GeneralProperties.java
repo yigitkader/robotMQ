@@ -6,6 +6,9 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+/**
+ * @author yigitkader
+ */
 public class GeneralProperties {
 
     private Logger log = Logger.getLogger(GeneralProperties.class.getName());

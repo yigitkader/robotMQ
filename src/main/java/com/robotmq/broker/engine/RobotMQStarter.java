@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 
+/**
+ * @author yigitkader
+ */
 @Component
 public class RobotMQStarter {
 

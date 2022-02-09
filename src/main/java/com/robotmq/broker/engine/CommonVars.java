@@ -7,7 +7,11 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+/**
+ * @author yigitkader
+ *
+ * @implNote DO NOT MODIFY HERE
+ */
 public class CommonVars {
 
     public static volatile Set<Socket> SOCKET_POOL = ConcurrentHashMap.newKeySet();

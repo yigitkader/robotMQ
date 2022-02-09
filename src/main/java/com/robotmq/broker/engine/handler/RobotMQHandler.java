@@ -9,7 +9,9 @@ import java.net.Socket;
 import java.time.LocalDateTime;
 import java.util.logging.Logger;
 
-
+/**
+ * @author yigitkader
+ */
 public class RobotMQHandler implements Handler {
 
     private static RobotMQHandler INSTANCE = new RobotMQHandler();

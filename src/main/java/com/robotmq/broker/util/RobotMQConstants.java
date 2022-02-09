@@ -1,5 +1,8 @@
 package com.robotmq.broker.util;
 
+/**
+ * @author yigitkader
+ */
 public class RobotMQConstants {
 
     private RobotMQConstants() {
