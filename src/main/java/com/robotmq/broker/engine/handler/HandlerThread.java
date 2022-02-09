@@ -1,6 +1,10 @@
 package com.robotmq.broker.engine.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.robotmq.broker.vo.SocketTopics;
+import com.robotmq.broker.vo.TopicDataVO;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -79,7 +83,7 @@ public class HandlerThread extends Thread {
                                 socketTopicsList.add(o.toString());
                             });
 
-                            //TODO :  Only one client listen one topic. delete before if it.
+
 
                             SocketTopics socketTopics = SocketTopics.builder()
                                     .socket(this.socket)
@@ -99,12 +103,23 @@ public class HandlerThread extends Thread {
                             final BlockingQueue<String> dataToConsumed = CommonVars.TOPICS_AND_DATA.get(t);
                             if (dataToConsumed != null) {
                                 dataToConsumed.forEach(d -> {
-                                    outStream.println("DATA : " + d + "\n");
-                                    //outStream.flush();
+                                    try {
+                                        final TopicDataVO topicDataVO = TopicDataVO.builder()
+                                                .topic(t)
+                                                .data(d)
+                                                .build();
+                                        outStream.println(topicDataVO.toString()+"\n\r");
+                                        outStream.flush();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 });
                                 CommonVars.TOPICS_AND_DATA.remove(t);
+                                //TODO :  Only one client listen one topic. delete before if it.
                             }
                         });
+
+
                     });
 
                 }
@@ -115,6 +130,12 @@ public class HandlerThread extends Thread {
                 return;
             }
         }
+    }
+
+
+    private String convertObjectToJsonString(Object obj) throws JsonProcessingException {
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        return ow.writeValueAsString(obj);
     }
 
 }
