@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.robotmq.broker.vo.SocketTopics;
-import com.robotmq.broker.vo.TopicDataVO;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -104,11 +103,10 @@ public class HandlerThread extends Thread {
                             if (dataToConsumed != null) {
                                 dataToConsumed.forEach(d -> {
                                     try {
-                                        final TopicDataVO topicDataVO = TopicDataVO.builder()
-                                                .topic(t)
-                                                .data(d)
-                                                .build();
-                                        outStream.println(topicDataVO.toString()+"\n\r");
+                                        JSONObject jsonObject = new JSONObject();
+                                        jsonObject.put("topic",t);
+                                        jsonObject.put("data",d);
+                                        outStream.println(jsonObject.toString()+"\n\r");
                                         outStream.flush();
                                     } catch (Exception e) {
                                         e.printStackTrace();
