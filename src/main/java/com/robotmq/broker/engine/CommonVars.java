@@ -1,4 +1,4 @@
-package com.robotmq.broker.engine.handler;
+package com.robotmq.broker.engine;
 
 import com.robotmq.broker.vo.SocketTopics;
 
