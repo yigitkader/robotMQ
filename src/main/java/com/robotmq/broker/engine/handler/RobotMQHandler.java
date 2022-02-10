@@ -2,6 +2,7 @@ package com.robotmq.broker.engine.handler;
 
 import com.robotmq.broker.engine.CommonVars;
 import com.robotmq.broker.util.GeneralProperties;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -16,8 +17,8 @@ public class RobotMQHandler implements Handler {
 
     private static RobotMQHandler INSTANCE = new RobotMQHandler();
 
-    private final static String ROBOTMQ_SERVER_SOCKET_PORT = GeneralProperties.getINSTANCE()
-            .getPropertyValue("application.properties", "robotmq.serversocket.listen.port");
+    private final static String ROBOTMQ_SERVER_SOCKET_PORT =
+            StringUtils.hasText(System.getenv("SERVER_SOCKET_PORT")) ? System.getenv("SERVER_SOCKET_PORT") : "9988" ;
 
     private final Logger logger = Logger.getLogger(RobotMQHandler.class.getName());
 
