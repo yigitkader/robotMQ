@@ -6,5 +6,4 @@ services:
     build:
       context: "./"
       dockerfile: "Dockerfile"
-    environment:
-      - SERVER_SOCKET_PORT=9988
+
