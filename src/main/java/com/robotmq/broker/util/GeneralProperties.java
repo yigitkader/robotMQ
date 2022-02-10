@@ -1,26 +1,30 @@
 package com.robotmq.broker.util;
 
-import lombok.extern.slf4j.Slf4j;
-
 import javax.el.PropertyNotFoundException;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Logger;
 
-@Slf4j
+/**
+ * @author yigitkader
+ */
 public class GeneralProperties {
+
+    private Logger log = Logger.getLogger(GeneralProperties.class.getName());
 
     private final static GeneralProperties INSTANCE = new GeneralProperties();
     private InputStream inputStream;
 
-    private GeneralProperties() {}
+    private GeneralProperties() {
+    }
 
     public static GeneralProperties getINSTANCE() {
         return INSTANCE;
     }
 
-    public String getPropertyValue(String propFileName,String propertyName) {
-        String result=null;
+    public String getPropertyValue(String propFileName, String propertyName) {
+        String result = null;
         try {
             Properties properties = new Properties();
             inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
@@ -30,11 +34,11 @@ public class GeneralProperties {
                 throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
             }
             result = properties.getProperty(propertyName);
-            if (result == null){
+            if (result == null) {
                 throw new PropertyNotFoundException();
             }
         } catch (Exception e) {
-            log.error(e.toString());
+            log.severe(e.toString());
         }
         return result;
     }
