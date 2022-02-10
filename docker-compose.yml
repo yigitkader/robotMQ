@@ -1,0 +1,8 @@
+version: '3'
+services:
+  robotmq-cluster:
+    ports:
+      - "9988:9988"
+    build:
+      context: "./"
+      dockerfile: "Dockerfile"
